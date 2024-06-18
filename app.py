@@ -17,3 +17,9 @@ def test_connection():  # Uses TBA ping webhook to test the connection
     logging.info('Received ping from TBA')
 
     return jsonify({'status': 'success'}), 200
+
+@app.route('/tba/new_match', methods=['POST'])
+def log_new_match():
+    logging.info('Received new match from TBA')
+
+    return jsonify({'status': 'success'}), 200
