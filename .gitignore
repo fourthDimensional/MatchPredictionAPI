@@ -4,3 +4,4 @@
 tests/__pycache__
 __pycache__
 app.log
+static/redis
