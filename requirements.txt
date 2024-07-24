@@ -2,3 +2,9 @@ requests~=2.32.3
 Flask~=3.0.3
 Flask-Cors~=4.0.1
 pytest~=8.2.2
+statbotics~=2.0.1
+pandas
+scikit-learn==1.4.0
+tensorflow
+keras
+Flask-Caching==2.3.0
