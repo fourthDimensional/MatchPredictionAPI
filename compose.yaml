@@ -21,17 +21,14 @@ services:
 
   redis:
     image: redis/redis-stack:latest
+    environment:
+      - REDIS_ARGS --appendonly yes --save 30 1
     ports:
       - 6379:6379
       - 8001:8001
     volumes:
       - redis-data:/data
+      - ./redis.conf:/redis-stack.conf
 
 volumes:
   redis-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./static/redis
-
