@@ -128,10 +128,20 @@ def handle_upcoming_match(message_json):
 
     redis_client.hset(f'upcoming_match:{message_json["match_key"]}:fields', mapping={**formatted_match})
 
+    # metadata = {
+    #     **local_prediction,
+    #     'statbotics_prediction': statbotics.get_statbotics_match_prediction(message_json['match_key'])[0],
+    #     'statbotics_win_confidence': statbotics.get_statbotics_match_prediction(message_json['match_key'])[1],
+    #     'local_predicted_winner': local_predicted_winner,
+    #     'event_key': message_json['event_key'],
+    #     'event_name': message_json['event_name'],
+    #     'time': message_json['scheduled_time']
+    # }
+
     metadata = {
         **local_prediction,
-        'statbotics_prediction': statbotics.get_statbotics_match_prediction(message_json['match_key'])[0],
-        'statbotics_win_confidence': statbotics.get_statbotics_match_prediction(message_json['match_key'])[1],
+        'statbotics_prediction': 'red',
+        'statbotics_win_confidence': '1.0',
         'local_predicted_winner': local_predicted_winner,
         'event_key': message_json['event_key'],
         'event_name': message_json['event_name'],
