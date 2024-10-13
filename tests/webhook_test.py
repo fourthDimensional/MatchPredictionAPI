@@ -2,7 +2,7 @@ import requests
 
 
 def test_post_new_match():
-    url = "http://localhost:5000/tba/new_match"
+    url = "http://localhost:5000/tba"
     headers = {'Content-Type': 'application/json'}
     data = {
         "message_data": {

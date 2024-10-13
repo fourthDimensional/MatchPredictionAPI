@@ -38,12 +38,14 @@ cache = Cache(app)
 
 setup_logging()
 
-match_predictor = MatchPrediction('static/model/model.keras', 'static/model/random_forest.pkl',
-                                  'static/model/scaler.pkl')
+model_dir = os.path.join('static', 'model', 'model.keras')
+rf_dir = os.path.join('static', 'model', 'random_forest.pkl')
+scaler_dir = os.path.join('static', 'model', 'scaler.pkl')
+
+match_predictor = MatchPrediction(model_dir, rf_dir, scaler_dir)
 statbotics = StatboticsAPI(2024)
 
 
-# learned there is only one route for a single webhook and I have to handle it based off of the message typex
 @app.route('/tba', methods=['POST'])
 def tba_webhook():
     match request.json['message_type']:
@@ -145,7 +147,8 @@ def get_dataset():
     keys = redis_client.keys('completed_match:*:fields')
 
     # Open a CSV file for writing
-    with open('static/matches.csv', 'w', newline='') as csvfile:
+    csv_path = os.path.join('static', 'matches.csv')
+    with open(csv_path, 'w', newline='') as csvfile:
         # Initialize the CSV writer
         writer = None
 
@@ -169,4 +172,4 @@ def get_dataset():
             # Write the merged data to the CSV file
             writer.writerow(merged_data)
 
-    return send_file('static/matches.csv'), 200
+    return send_file(csv_path), 200
