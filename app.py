@@ -48,6 +48,8 @@ statbotics = StatboticsAPI(2024)
 
 @app.route('/tba', methods=['POST'])
 def tba_webhook():
+    print(request.json)
+
     match request.json['message_type']:
         case 'ping':
             logging.info('Received ping from TBA')
