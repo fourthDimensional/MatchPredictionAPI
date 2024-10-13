@@ -36,13 +36,13 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
 
-RUN mkdir -p /app/static && chmod -R 777 /app/static
-
 # Switch to the non-privileged user to run the application.
 USER appuser
 
 # Copy the source code into the container.
 COPY . .
+
+RUN chmod -R 776 /app/static/matches.csv
 
 # Expose the port that the application listens on.
 EXPOSE 5000
