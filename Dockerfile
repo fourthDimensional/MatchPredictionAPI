@@ -42,7 +42,7 @@ USER appuser
 # Copy the source code into the container.
 COPY . .
 
-RUN chmod -R 776 /app/static/matches.csv
+RUN mkdir -p /static && chmod -R 777 /static
 
 # Expose the port that the application listens on.
 EXPOSE 5000
