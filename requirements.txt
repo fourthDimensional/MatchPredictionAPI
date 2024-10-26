@@ -8,4 +8,5 @@ scikit-learn==1.4.0
 tensorflow
 keras
 Flask-Caching==2.3.0
+groq==0.11.0
 redis

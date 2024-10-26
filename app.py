@@ -122,11 +122,11 @@ def handle_upcoming_match(message_json):
                         'blue_alliance_win_confidence': str(prediction[1]),
                         'draw_confidence': str(prediction[2])}
 
-    if float(local_prediction['draw_confidence']) > 1/3:
+    if float(local_prediction['draw_confidence']) > 1 / 3:
         local_predicted_winner = 'draw'
     else:
-        local_predicted_winner = 'red' if float(local_prediction['red_alliance_win_confidence']) > float(local_prediction[
-            'blue_alliance_win_confidence']) else 'blue'
+        local_predicted_winner = 'red' if float(local_prediction['red_alliance_win_confidence']) > float(
+            local_prediction['blue_alliance_win_confidence']) else 'blue'
 
     redis_client.hset(f'upcoming_match:{message_json["match_key"]}:fields', mapping={**formatted_match})
 
@@ -150,8 +150,6 @@ def handle_upcoming_match(message_json):
             'event_name': message_json['event_name'],
             'time': message_json['scheduled_time']
         }
-
-
 
     redis_client.hset(f'upcoming_match:{message_json["match_key"]}:metadata', mapping={**metadata})
 

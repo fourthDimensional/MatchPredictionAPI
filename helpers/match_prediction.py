@@ -4,7 +4,11 @@ import pickle
 import pandas as pd
 from keras.models import load_model
 
+from helpers.ai_summaries import GroqSummaries
+
 os.environ["KERAS_BACKEND"] = "tensorflow"
+
+groq = GroqSummaries(os.environ.get("GROQ_API_KEY"))
 
 class MatchPrediction:
     def __init__(self, model_dir, rf_dir, scaler_dir):
@@ -33,6 +37,8 @@ class MatchPrediction:
         features_to_use = [feat[0] for feat in sorted_features[:-130]]
 
         X_reduced = X_normalized_df[features_to_use]
+
+        print("AI Match Prediction: " + groq.predict_match(dataframe))
 
         return X_reduced
 
