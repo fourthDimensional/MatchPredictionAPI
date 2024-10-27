@@ -63,6 +63,15 @@ def tba_webhook():
     return jsonify({'status': 'success'}), 200
 
 
+@app.route('/{match_key}/prediction', methods=['GET'])
+def get_match_prediction(match_key):
+    if redis_client.exists(f'completed_match:{match_key}:metadata'):
+        metadata = redis_client.hgetall(f'completed_match:{match_key}:metadata')
+        return jsonify(metadata), 200
+    else:
+        return jsonify({'error': 'Match not found'}), 404
+
+
 def handle_new_match_score(message_json):
     match_key = message_json['match']['key']
 
