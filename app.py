@@ -48,6 +48,19 @@ match_predictor = MatchPrediction(model_dir, rf_dir, scaler_dir)
 statbotics = StatboticsAPI(2024)
 
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    result = ""
+    if request.method == 'POST':
+        # Retrieve inputs from form
+        inputs = [request.form.get(f'input{i}') for i in range(1, 7)]
+
+        # Process inputs (this is where you would add your logic)
+        result = "You entered: " + ", ".join(inputs)
+
+    return render_template('template.html', result=result)
+
+
 @app.route('/tba', methods=['POST'])
 def tba_webhook():
     print(request.json)
@@ -69,6 +82,8 @@ def get_match_prediction(match_key):
         metadata = redis_client.hgetall(f'completed_match:{match_key}:metadata')
         return jsonify(metadata), 200
     else:
+        tba
+
         return jsonify({'error': 'Match not found'}), 404
 
 
