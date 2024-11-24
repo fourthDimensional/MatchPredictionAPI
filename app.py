@@ -48,6 +48,11 @@ match_predictor = MatchPrediction(model_dir, rf_dir, scaler_dir)
 statbotics = StatboticsAPI(2024)
 
 
+@app.route('/')
+def index():
+    return 'Hello, World!'
+
+
 @app.route('/tba', methods=['POST'])
 def tba_webhook():
     print(request.json)
