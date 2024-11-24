@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Form</title>
+</head>
+<body>
+    <h1>Enter Information</h1>
+    <form method="POST" action="/">
+        {% for i in range(1, 7) %}
+            <label for="input{{ i }}">Input {{ i }}:</label>
+            <input type="text" name="input{{ i }}" id="input{{ i }}"><br><br>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Processed Result:</h2>
+    <p>{{ result }}</p>
+</body>
+</html>
