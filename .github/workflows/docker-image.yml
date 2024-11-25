@@ -37,6 +37,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-docker-
 
+      # 4. Log in to the Container registry
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -44,6 +45,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # 5. Extract metadata (tags, labels) for Docker
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
@@ -53,17 +55,20 @@ jobs:
             type=raw,value=latest
             type=sha
 
-      - name: Build and push Docker image
+      # 6. Build and push multi-platform Docker image
+      - name: Build and push multi-platform Docker image
         id: push
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: .
+          platforms: linux/amd64,linux/arm64 # Specify platforms
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha   # Use cache from GitHub Actions
           cache-to: type=gha,mode=max  # Store cache in GitHub Actions with maximum scope
 
+      # 7. Generate artifact attestation
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
