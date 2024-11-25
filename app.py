@@ -24,7 +24,7 @@ redis_client = Redis(
     decode_responses=True
 )
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='static/templates')
 
 CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
 
