@@ -196,6 +196,8 @@ def get_dataset():
         # Append the merged data to the matches list
         matches.append(merged_data)
 
+    matches.sort(key=lambda x: x['match_key'])
+
     return render_template('dataset.html', matches=matches)
 
 
