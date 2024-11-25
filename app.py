@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_caching import Cache
 from flask_cors import CORS
 from redis import Redis
