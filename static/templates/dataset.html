@@ -26,6 +26,12 @@
         tr:hover {
             background-color: #ddd;
         }
+        .red {
+            background-color: #be2a2a;
+        }
+        .blue {
+            background-color: #1e78d7;
+        }
     </style>
 </head>
 <body>
@@ -41,6 +47,7 @@
                 <th>Blue 2</th>
                 <th>Blue 3</th>
                 <th>Predicted Winner</th>
+                <th>Actual Winner</th>
             </tr>
         </thead>
         <tbody>
@@ -53,7 +60,8 @@
                     <td>{{ match.blue1 }}</td>
                     <td>{{ match.blue2 }}</td>
                     <td>{{ match.blue3 }}</td>
-                    <td>{{ match.local_predicted_winner }}</td>
+                    <td class="{{ match.local_predicted_winner }}">{{ match.local_predicted_winner }}</td>
+                    <td class="{{ match.actual_winner }}">{{ match.actual_winner }}</td>
                 </tr>
             {% endfor %}
         </tbody>
