@@ -50,7 +50,7 @@ statbotics = StatboticsAPI(2024)
 
 @app.route('/')
 def index():
-    return 'Hello, World!'
+    return 'Hello, Docker!'
 
 
 @app.route('/tba', methods=['POST'])
