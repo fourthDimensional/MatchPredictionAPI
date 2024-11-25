@@ -1,7 +1,8 @@
+import csv
 import logging
 import os
 
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, send_file
 from flask_caching import Cache
 from flask_cors import CORS
 from redis import Redis
@@ -196,3 +197,49 @@ def get_dataset():
         matches.append(merged_data)
 
     return render_template('dataset.html', matches=matches)
+
+
+@app.route('/dataset_csv', methods=['GET'])
+def get_dataset_csv():
+    # Get all keys that match the pattern
+    keys = redis_client.keys('completed_match:*:fields')
+
+    # Initialize a set to hold all possible fieldnames
+    all_fieldnames = set()
+
+    # Initialize a list to hold the match data
+    matches = []
+
+    # Iterate over the keys to collect all fieldnames
+    for key in keys:
+        # Get the hash data for the key
+        data = redis_client.hgetall(key)
+
+        # Get the associated metadata key
+        metadata_key = key.replace(':fields', ':metadata')
+        metadata = redis_client.hgetall(metadata_key)
+
+        # Merge the data and metadata
+        merged_data = {**data, **metadata}
+
+        # Add the keys to the set of all fieldnames
+        all_fieldnames.update(merged_data.keys())
+
+        # Append the merged data to the matches list
+        matches.append(merged_data)
+
+    # Convert the set of fieldnames to a sorted list
+    all_fieldnames = sorted(all_fieldnames)
+
+    # Open a CSV file for writing
+    csv_path = os.path.join('static', 'matches.csv')
+    with open(csv_path, 'w', newline='') as csvfile:
+        # Initialize the CSV writer
+        writer = csv.DictWriter(csvfile, fieldnames=all_fieldnames)
+        writer.writeheader()
+
+        # Write each match's data to the CSV file
+        for match in matches:
+            writer.writerow(match)
+
+    return send_file(csv_path, as_attachment=True)
