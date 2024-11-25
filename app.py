@@ -1,8 +1,7 @@
-import csv
 import logging
 import os
 
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request
 from flask_caching import Cache
 from flask_cors import CORS
 from redis import Redis
@@ -151,6 +150,7 @@ def handle_upcoming_match(message_json):
             'statbotics_win_confidence': '1.0',
             'local_predicted_winner': local_predicted_winner,
             'event_key': message_json['event_key'],
+            'match_key': message_json['match_key'],
             'event_name': message_json['event_name'],
             'time': message_json['scheduled_time']
         }
@@ -161,6 +161,7 @@ def handle_upcoming_match(message_json):
             'statbotics_win_confidence': statbotics.get_statbotics_match_prediction(message_json['match_key'])[1],
             'local_predicted_winner': local_predicted_winner,
             'event_key': message_json['event_key'],
+            'match_key': message_json['match_key'],
             'event_name': message_json['event_name'],
             'time': message_json['scheduled_time']
         }
@@ -175,30 +176,23 @@ def get_dataset():
     # Get all keys that match the pattern
     keys = redis_client.keys('completed_match:*:fields')
 
-    # Open a CSV file for writing
-    csv_path = os.path.join('static', 'matches.csv')
-    with open(csv_path, 'w', newline='') as csvfile:
-        # Initialize the CSV writer
-        writer = None
+    # Initialize a list to hold the match data
+    matches = []
 
-        # Iterate over the keys
-        for key in keys:
-            # Get the hash data for the key
-            data = redis_client.hgetall(key)
+    # Iterate over the keys
+    for key in keys:
+        # Get the hash data for the key
+        data = redis_client.hgetall(key)
 
-            # Get the associated metadata key
-            metadata_key = key.replace(':fields', ':metadata')
-            metadata = redis_client.hgetall(metadata_key)
+        # Get the associated metadata key
+        metadata_key = key.replace(':fields', ':metadata')
+        metadata = redis_client.hgetall(metadata_key)
 
-            # Merge the data and metadata
-            merged_data = {**data, **metadata}
+        # Merge the data and metadata
+        merged_data = {**data, **metadata}
+        merged_data['match_key'] = key.split(':')[1]  # Extract match_key from the key
 
-            # If the writer is not initialized, do it now
-            if writer is None:
-                writer = csv.DictWriter(csvfile, fieldnames=merged_data.keys())
-                writer.writeheader()
+        # Append the merged data to the matches list
+        matches.append(merged_data)
 
-            # Write the merged data to the CSV file
-            writer.writerow(merged_data)
-
-    return send_file(csv_path), 200
+    return render_template('dataset.html', matches=matches)
