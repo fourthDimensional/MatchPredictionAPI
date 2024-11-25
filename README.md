@@ -26,8 +26,8 @@ OR
 
 1. **Clone the repository**:
     ```sh
-    git clone https://github.com/yourusername/yourrepository.git
-    cd yourrepository
+    git clone https://github.com/fourthDimensional/MatchPredictionAPI.git
+    cd MatchPredictionAPI
     ```
 
 2. **Build and run the Docker containers**:
