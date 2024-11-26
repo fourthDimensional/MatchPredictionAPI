@@ -63,8 +63,54 @@
         .details-row {
             display: none;
         }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+            padding: 4px 8px 8px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .pagination button:disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+        .pagination span {
+            margin: 0 10px;
+            font-size: 16px;
+        }
     </style>
     <script>
+        let currentPage = 1;
+        const rowsPerPage = 5;
+
+        function paginate() {
+            const rows = document.querySelectorAll('tbody tr.data-row, tbody tr.details-row');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            rows.forEach((row, index) => {
+                row.style.display = (index >= (currentPage - 1) * rowsPerPage && index < currentPage * rowsPerPage) ? '' : 'none';
+            });
+            document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+        }
+
+        function nextPage() {
+            currentPage++;
+            paginate();
+        }
+
+        function prevPage() {
+            currentPage--;
+            paginate();
+        }
+
         function searchMatches() {
             const input = document.getElementById('searchBar').value.toLowerCase();
             const rows = document.querySelectorAll('tbody tr.data-row, tbody tr.details-row');
@@ -89,6 +135,9 @@
                 button.textContent = 'Show Details';
         }
     }
+    document.addEventListener('DOMContentLoaded', () => {
+        paginate();
+    });
     </script>
 </head>
 <body>
@@ -142,5 +191,10 @@
             {% endfor %}
         </tbody>
     </table>
+    <div class="pagination">
+        <button id="prev-btn" onclick="prevPage()">&#8592;</button>
+        <span id="page-info"></span>
+        <button id="next-btn" onclick="nextPage()">&#8594;</button>
+    </div>
 </body>
 </html>
