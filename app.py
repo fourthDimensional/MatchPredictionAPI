@@ -206,29 +206,37 @@ def handle_upcoming_match(message_json):
 
 @app.route('/dataset', methods=['GET'])
 def get_dataset():
-    # Get all keys that match the pattern
-    keys = redis_client.keys('completed_match:*:fields')
+    # Get all keys for completed and upcoming matches
+    completed_keys = redis_client.keys('completed_match:*:fields')
+    upcoming_keys = redis_client.keys('upcoming_match:*:fields')
 
     # Initialize a list to hold the match data
     matches = []
 
-    # Iterate over the keys
-    for key in keys:
-        # Get the hash data for the key
-        data = redis_client.hgetall(key)
+    # Function to process match keys
+    def process_keys(keys, status):
+        for key in keys:
+            # Get the hash data for the key
+            data = redis_client.hgetall(key)
 
-        # Get the associated metadata key
-        metadata_key = key.replace(':fields', ':metadata')
-        metadata = redis_client.hgetall(metadata_key)
+            # Get the associated metadata key
+            metadata_key = key.replace(':fields', ':metadata')
+            metadata = redis_client.hgetall(metadata_key)
 
-        # Merge the data and metadata
-        merged_data = {**data, **metadata}
-        merged_data['match_key'] = key.split(':')[1]  # Extract match_key from the key
+            # Merge the data and metadata
+            merged_data = {**data, **metadata}
+            merged_data['match_key'] = key.split(':')[1]  # Extract match_key from the key
+            merged_data['status'] = status  # Add status to differentiate between completed and upcoming
 
-        # Append the merged data to the matches list
-        matches.append(merged_data)
+            # Append the merged data to the matches list
+            matches.append(merged_data)
 
-    matches.sort(key=lambda x: x['match_key'])
+    # Process completed and upcoming matches
+    process_keys(completed_keys, 'completed')
+    process_keys(upcoming_keys, 'upcoming')
+
+    # Sort matches: upcoming matches first, then by match_key
+    matches.sort(key=lambda x: (x['status'] == 'completed', x['match_key']))
 
     return render_template('dataset.html', matches=matches)
 
