@@ -44,7 +44,22 @@
             width: 24px;
             height: 24px;
         }
+        .details-row {
+            display: none;
+        }
     </style>
+    <script>
+        function toggleDetails(button) {
+            const detailsRow = button.closest('tr').nextElementSibling;
+            if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
+                detailsRow.style.display = 'table-row';
+                button.textContent = 'Hide Details';
+            } else {
+                detailsRow.style.display = 'none';
+                button.textContent = 'Show Details';
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="header">
@@ -67,6 +82,7 @@
                 <th>Blue 3</th>
                 <th>Predicted Winner</th>
                 <th>Actual Winner</th>
+                <th>Details</th>
             </tr>
         </thead>
         <tbody>
@@ -81,6 +97,16 @@
                     <td>{{ match.blue3 }}</td>
                     <td class="{{ match.local_predicted_winner }}">{{ match.local_predicted_winner }}</td>
                     <td class="{{ match.actual_winner }}">{{ match.actual_winner }}</td>
+                    <td><button onclick="toggleDetails(this)">Show Details</button></td>
+                </tr>
+                <tr class="details-row">
+                    <td colspan="10">
+                        <strong>Event Name:</strong> {{ match.event_name }}<br>
+                        <strong>Red RP:</strong> {{ match.red_rp }}<br>
+                        <strong>Red Score:</strong> {{ match.red_score }}<br>
+                        <strong>Blue RP:</strong> {{ match.blue_rp }}<br>
+                        <strong>Blue Score:</strong> {{ match.blue_score }}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
