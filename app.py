@@ -2,7 +2,7 @@ import csv
 import logging
 import os
 
-from flask import Flask, jsonify, request, render_template, send_file
+from flask import Flask, jsonify, request, render_template, send_file, redirect
 from flask_caching import Cache
 from flask_cors import CORS
 from redis import Redis
@@ -50,30 +50,38 @@ statbotics = StatboticsAPI(2024)
 
 @app.route('/')
 def index():
-    return 'Hello, Docker!'
+    return redirect('/dataset')
 
 
+# Define a route to handle POST requests from TBA
 @app.route('/tba', methods=['POST'])
 def tba_webhook():
-    print(request.json)
-
+    # Match the message type from the request JSON
     match request.json['message_type']:
         case 'ping':
+            # Log a message when a ping is received
             logging.info('Received ping from TBA')
         case 'match_score':
+            # Handle new match score updates
             handle_new_match_score(request.json['message_data'])
         case 'upcoming_match':
+            # Handle upcoming match notifications
             handle_upcoming_match(request.json['message_data'])
 
+    # Return a success response
     return jsonify({'status': 'success'}), 200
 
 
 @app.route('/<match_key>/prediction', methods=['GET'])
 def get_match_prediction(match_key):
+    # Check if the match metadata exists in Redis
     if redis_client.exists(f'completed_match:{match_key}:metadata'):
+        # Retrieve the metadata from Redis
         metadata = redis_client.hgetall(f'completed_match:{match_key}:metadata')
+        # Return the metadata as a JSON response with a 200 status code
         return jsonify(metadata), 200
     else:
+        # Return an error message as a JSON response with a 404 status code
         return jsonify({'error': 'Match not found'}), 404
 
 
