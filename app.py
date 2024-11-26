@@ -68,7 +68,7 @@ def tba_webhook():
     return jsonify({'status': 'success'}), 200
 
 
-@app.route('/{match_key}/prediction', methods=['GET'])
+@app.route('/<match_key>/prediction', methods=['GET'])
 def get_match_prediction(match_key):
     if redis_client.exists(f'completed_match:{match_key}:metadata'):
         metadata = redis_client.hgetall(f'completed_match:{match_key}:metadata')
@@ -78,13 +78,19 @@ def get_match_prediction(match_key):
 
 
 def handle_new_match_score(message_json):
+    # Extract the match key from the message
     match_key = message_json['match']['key']
 
+    # Check if the match data exists in Redis for upcoming matches
     if redis_client.exists(f'upcoming_match:{match_key}:fields'):
+        # Store the actual winner in Redis
         redis_client.hset(f'upcoming_match:{match_key}:metadata', 'actual_winner',
                           message_json['match']['winning_alliance'])
 
+        # Log the red alliance total point keys
         logging.info(f'red total point keys {message_json["match"]["alliances"]["red"].keys()}')
+
+        # Store the match scores and ranking points in Redis
         redis_client.hset(f'upcoming_match:{match_key}:metadata', mapping={
             'red_score': message_json['match']['alliances']['red']['score'],
             'blue_score': message_json['match']['alliances']['blue']['score'],
@@ -92,17 +98,20 @@ def handle_new_match_score(message_json):
             'blue_rp': message_json['match']['score_breakdown']['blue']['rp']
         })
 
+        # Rename the keys to mark the match as completed
         redis_client.rename(f'upcoming_match:{match_key}:fields',
                             f'completed_match:{match_key}:fields')
         redis_client.rename(f'upcoming_match:{match_key}:metadata',
                             f'completed_match:{match_key}:metadata')
 
+        # Initialize prediction accuracy tracking if not already present
         if not redis_client.exists('local_prediction_accuracy'):
             redis_client.hset('local_prediction_accuracy', mapping={'correct': 0, 'total': 0, 'accuracy': 0.0})
 
         if not redis_client.exists('statbotics_prediction_accuracy'):
             redis_client.hset('statbotics_prediction_accuracy', mapping={'correct': 0, 'total': 0, 'accuracy': 0.0})
 
+        # Update local prediction accuracy
         if redis_client.hget(f'completed_match:{match_key}:metadata', 'actual_winner') == redis_client.hget(
                 f'completed_match:{match_key}:metadata', 'local_predicted_winner'):
             redis_client.hincrby('local_prediction_accuracy', 'correct', 1)
@@ -111,6 +120,7 @@ def handle_new_match_score(message_json):
                           int(redis_client.hget('local_prediction_accuracy', 'correct')) / int(
                               redis_client.hget('local_prediction_accuracy', 'total')))
 
+        # Update Statbotics prediction accuracy
         if redis_client.hget(f'completed_match:{match_key}:metadata', 'actual_winner') == redis_client.hget(
                 f'completed_match:{match_key}:metadata', 'statbotics_prediction'):
             redis_client.hincrby('statbotics_prediction_accuracy', 'correct', 1)
@@ -118,32 +128,44 @@ def handle_new_match_score(message_json):
         redis_client.hset('statbotics_prediction_accuracy', 'accuracy',
                           int(redis_client.hget('statbotics_prediction_accuracy', 'correct')) / int(
                               redis_client.hget('statbotics_prediction_accuracy', 'total')))
+    # Check if the match has already been processed
     elif redis_client.exists(f'completed_match:{match_key}:fields'):
         logging.info(f'Match {match_key} has already been processed')
+    # Handle failed matches
     else:
         if not redis_client.exists('failed_matches'):
             redis_client.set('failed_matches', 0)
         redis_client.incrby('failed_matches', 1)
 
+    # Return a success response
     return jsonify({'status': 'success'}), 200
 
 
 def handle_upcoming_match(message_json):
+    # Format the match data using Statbotics API
     formatted_match = statbotics.format_match(message_json['team_keys'])
+
+    # Predict the match outcome using the match predictor
     prediction = match_predictor.predict(formatted_match)
 
-    local_prediction = {'red_alliance_win_confidence': str(prediction[0]),
-                        'blue_alliance_win_confidence': str(prediction[1]),
-                        'draw_confidence': str(prediction[2])}
+    # Create a dictionary for local prediction results
+    local_prediction = {
+        'red_alliance_win_confidence': str(prediction[0]),
+        'blue_alliance_win_confidence': str(prediction[1]),
+        'draw_confidence': str(prediction[2])
+    }
 
+    # Determine the predicted winner based on confidence values
     if float(local_prediction['draw_confidence']) > 1 / 3:
         local_predicted_winner = 'draw'
     else:
         local_predicted_winner = 'red' if float(local_prediction['red_alliance_win_confidence']) > float(
             local_prediction['blue_alliance_win_confidence']) else 'blue'
 
+    # Store the formatted match data in Redis
     redis_client.hset(f'upcoming_match:{message_json["match_key"]}:fields', mapping={**formatted_match})
 
+    # Create metadata for the match based on whether it is offseason or not
     if offseason:
         metadata = {
             **local_prediction,
@@ -167,8 +189,10 @@ def handle_upcoming_match(message_json):
             'time': message_json['scheduled_time']
         }
 
+    # Store the metadata in Redis
     redis_client.hset(f'upcoming_match:{message_json["match_key"]}:metadata', mapping={**metadata})
 
+    # Return a success response
     return jsonify({'status': 'success'}), 200
 
 
