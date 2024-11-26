@@ -60,6 +60,9 @@
         .upcoming-winner {
             background-color: #ffffff;
         }
+        .details-row {
+            display: none;
+        }
     </style>
     <script>
         function searchMatches() {
@@ -74,6 +77,16 @@
                 }
             });
         }
+        function toggleDetails(button) {
+            const detailsRow = button.parentElement.parentElement.nextElementSibling;
+            if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
+                detailsRow.style.display = 'table-row';
+                button.textContent = 'Hide Details';
+            } else {
+                detailsRow.style.display = 'none';
+                button.textContent = 'Show Details';
+        }
+    }
     </script>
 </head>
 <body>
