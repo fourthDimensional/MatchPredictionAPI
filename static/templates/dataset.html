@@ -22,7 +22,7 @@
             background-color: #f2f2f2;
             text-align: left;
         }
-        tr:nth-child(even) {
+        tr:nth-child(even):not(.details-row) {
             background-color: #f9f9f9;
         }
         tr:hover {
@@ -119,7 +119,7 @@
         </thead>
         <tbody>
             {% for match in matches %}
-                <tr>
+                <tr class="{{ 'upcoming' if match.status == 'upcoming' else '' }}">
                     <td>{{ match.match_key }}</td>
                     <td>{{ match.red1 }}</td>
                     <td>{{ match.red2 }}</td>
