@@ -25,6 +25,9 @@
         tr:hover {
             background-color: #ddd;
         }
+        tr:hover .upcoming-winner {
+            background-color: #ddd;
+        }
         .red {
             background-color: #d90d0d;
         }
@@ -59,28 +62,15 @@
         }
     </style>
     <script>
-        function toggleDetails(button) {
-            const detailsRow = button.closest('tr').nextElementSibling;
-            if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
-                detailsRow.style.display = 'table-row';
-                button.textContent = 'Hide Details';
-            } else {
-                detailsRow.style.display = 'none';
-                button.textContent = 'Show Details';
-            }
-        }
-
         function searchMatches() {
             const input = document.getElementById('searchBar').value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr.data-row');
+            const rows = document.querySelectorAll('tbody tr.data-row, tbody tr.details-row');
             rows.forEach(row => {
                 const matchKey = row.querySelector('td').textContent.toLowerCase();
                 if (matchKey.includes(input)) {
                     row.style.display = '';
-                    row.nextElementSibling.style.display = '';
                 } else {
                     row.style.display = 'none';
-                    row.nextElementSibling.style.display = 'none';
                 }
             });
         }
@@ -113,7 +103,7 @@
         </thead>
         <tbody>
             {% for match in matches %}
-                <tr>
+                <tr class="data-row">
                     <td>{{ match.match_key }}</td>
                     <td>{{ match.red1 }}</td>
                     <td>{{ match.red2 }}</td>
