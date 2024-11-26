@@ -22,8 +22,11 @@
             background-color: #f2f2f2;
             text-align: left;
         }
-        tr.data-row:nth-child(even) {
-            background-color: #f9f9f9;
+        tr:nth-child(even) {
+            background-color: #e7e6e6;
+        }
+        tr:nth-child(odd) {
+            background-color: #f2f2f2;
         }
         tr:hover {
             background-color: #ddd;
@@ -119,7 +122,7 @@
         </thead>
         <tbody>
             {% for match in matches %}
-                <tr class="data-row {{ 'upcoming' if match.status == 'upcoming' else '' }}">
+                <tr>
                     <td>{{ match.match_key }}</td>
                     <td>{{ match.red1 }}</td>
                     <td>{{ match.red2 }}</td>
