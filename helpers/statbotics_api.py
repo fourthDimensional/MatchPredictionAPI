@@ -1,24 +1,26 @@
-from statbotics import Statbotics
-
-fields = [
-    'team', 'epa_start', 'epa_pre_champs', 'epa_end', 'epa_diff',
-    'auto_epa_end', 'teleop_epa_end', 'endgame_epa_end',
-    'rp_1_epa_end', 'rp_2_epa_end', 'unitless_epa_end', 'norm_epa_end',
-    'wins', 'losses', 'ties', 'count', 'winrate', 'full_wins', 'full_losses', 'full_ties', 'full_count', 'full_winrate',
-    'total_epa_rank', 'total_epa_percentile', 'country_epa_rank', 'state_epa_rank', 'district_epa_rank',
-    'country_epa_percentile', 'state_epa_percentile', 'district_epa_percentile'
-]
-
-
 class StatboticsAPI:
     def __init__(self, year):
+        """
+        Initialize the StatboticsAPI class.
+
+        Args:
+            year (int): The year for which to retrieve data.
+        """
         self.sb = Statbotics()
         self.year = year
         self.context = 'seasonal'
-
         self.cached_teams = {}
 
     def get_team_metrics(self, team):
+        """
+        Retrieve team metrics from the Statbotics API or cache.
+
+        Args:
+            team (int): The team number.
+
+        Returns:
+            dict: A dictionary containing the team's metrics.
+        """
         if int(team) in self.cached_teams:
             return self.cached_teams[int(team)]
         else:
@@ -27,7 +29,6 @@ class StatboticsAPI:
             extracted_metric = {key: metrics[key] for key in fields}
 
             newly_formatted = {}
-
             extracted_team = extracted_metric['team']
             del extracted_metric['team']
             newly_formatted.update({extracted_team: extracted_metric})
@@ -37,13 +38,30 @@ class StatboticsAPI:
             return newly_formatted
 
     def format_team(self, team_number, placement):
+        """
+        Format team metrics with a specific placement prefix.
+
+        Args:
+            team_number (int): The team number.
+            placement (str): The placement prefix (e.g., 'red1', 'blue2').
+
+        Returns:
+            dict: A dictionary containing the formatted team metrics.
+        """
         data = self.get_team_metrics(team_number)
-
         new_data = data[int(team_number)]
-
         return {f'{placement}_{key}': new_data[key] for key in new_data}
 
     def format_match(self, match):
+        """
+        Format match data with team metrics.
+
+        Args:
+            match (list): A list containing match information.
+
+        Returns:
+            dict: A dictionary containing the formatted match data.
+        """
         red1 = self.format_team(match[3][3:], 'red1')
         red2 = self.format_team(match[4][3:], 'red2')
         red3 = self.format_team(match[5][3:], 'red3')
@@ -58,6 +76,14 @@ class StatboticsAPI:
         return team_metrics
 
     def get_statbotics_match_prediction(self, match_key):
+        """
+        Retrieve match prediction from the Statbotics API.
+
+        Args:
+            match_key (str): The match key.
+
+        Returns:
+            list: A list containing the predicted winner and win probability.
+        """
         match_info = self.sb.get_match(match_key)
         return [match_info['epa_winner'], match_info['epa_win_prob']]
-
