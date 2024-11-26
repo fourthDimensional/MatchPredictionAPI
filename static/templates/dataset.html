@@ -122,7 +122,7 @@
                     <td>{{ match.blue2 }}</td>
                     <td>{{ match.blue3 }}</td>
                     <td class="{{ match.local_predicted_winner }}">{{ match.local_predicted_winner }}</td>
-                    <td class="{{ 'upcoming-winner' if match.status == 'upcoming' else match.actual_winner }}">{{ 'Upcoming' if match.status == 'upcoming' else match.actual_winner }}</td>
+                    <td class="{{ 'upcoming-winner' if match.status == 'upcoming' else match.actual_winner }}">{{ 'upcoming' if match.status == 'upcoming' else match.actual_winner }}</td>
                     <td><button onclick="toggleDetails(this)">Show Details</button></td>
                 </tr>
                 <tr class="details-row">
