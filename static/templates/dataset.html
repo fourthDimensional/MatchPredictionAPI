@@ -70,7 +70,9 @@
             const rows = document.querySelectorAll('tbody tr.data-row, tbody tr.details-row');
             rows.forEach(row => {
                 const matchKey = row.querySelector('td').textContent.toLowerCase();
-                if (matchKey.includes(input)) {
+                const teamNumbers = Array.from(row.querySelectorAll('td:nth-child(n+2):nth-child(-n+7)')).map(td => td.textContent.toLowerCase());
+                const isMatch = matchKey.includes(input) || teamNumbers.some(team => team.includes(input));
+                if (isMatch) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
@@ -98,7 +100,7 @@
             </svg>
         </a>
     </div>
-    <input type="text" id="searchBar" class="searchbar" onkeyup="searchMatches()" placeholder="Search for match key...">
+    <input type="text" id="searchBar" class="searchbar" onkeyup="searchMatches()" placeholder="Search for match key or team number...">
     <table>
         <thead>
             <tr>
