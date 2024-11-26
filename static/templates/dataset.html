@@ -29,7 +29,7 @@
             background-color: #ddd;
         }
         .red {
-            background-color: #ff0e0e;
+            background-color: #d90d0d;
         }
         .blue {
             background-color: #1e78d7;
@@ -47,6 +47,16 @@
         .details-row {
             display: none;
         }
+        .searchbar {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
     </style>
     <script>
         function toggleDetails(button) {
@@ -59,6 +69,21 @@
                 button.textContent = 'Show Details';
             }
         }
+
+        function searchMatches() {
+            const input = document.getElementById('searchBar').value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr:not(.details-row)');
+            rows.forEach(row => {
+                const matchKey = row.querySelector('td').textContent.toLowerCase();
+                if (matchKey.includes(input)) {
+                    row.style.display = '';
+                    row.nextElementSibling.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                    row.nextElementSibling.style.display = 'none';
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -70,6 +95,7 @@
             </svg>
         </a>
     </div>
+    <input type="text" id="searchBar" class="searchbar" onkeyup="searchMatches()" placeholder="Search for match key...">
     <table>
         <thead>
             <tr>
