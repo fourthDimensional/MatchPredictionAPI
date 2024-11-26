@@ -1,3 +1,16 @@
+from statbotics import Statbotics
+
+fields = [
+    'team', 'epa_start', 'epa_pre_champs', 'epa_end', 'epa_diff',
+    'auto_epa_end', 'teleop_epa_end', 'endgame_epa_end',
+    'rp_1_epa_end', 'rp_2_epa_end', 'unitless_epa_end', 'norm_epa_end',
+    'wins', 'losses', 'ties', 'count', 'winrate', 'full_wins', 'full_losses', 'full_ties', 'full_count', 'full_winrate',
+    'total_epa_rank', 'total_epa_percentile', 'country_epa_rank', 'state_epa_rank', 'district_epa_rank',
+    'country_epa_percentile', 'state_epa_percentile', 'district_epa_percentile'
+]
+
+
+
 class StatboticsAPI:
     def __init__(self, year):
         """
