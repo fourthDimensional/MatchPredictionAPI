@@ -53,49 +53,13 @@ class BlueAllianceAPI:
 
         return results
 
-    def get_general_match_info(self, event=None, red=None, blue=None, offset=1):
-        if event is not None:
-            data = self.tba.event_matches(event=event, simple=True)
+    def get_general_match_info(self, match_key=None):
+        data = self.tba.match(match_key)
 
-            match_index = next((i for i, match in enumerate(data) if match['actual_time'] is None), None)
+        red = data['alliances']['red']['team_keys']
+        blue = data['alliances']['blue']['team_keys']
 
-            if match_index is not None:
-                match_index += offset
-
-                if 0 <= match_index < len(data):
-                    data = data[match_index]
-                else:
-                    print("Offset leads to an invalid match index.")
-                    return None
-            else:
-                print("No match without actual time found.")
-                return None
-
-            red = data['alliances']['red']['team_keys']
-            blue = data['alliances']['blue']['team_keys']
-        else:
-            # Ensures machine learning model input shape is correct if function was given lists of teams instead of
-            # an event. Might change this later or split into two functions.
-            data = {'key': 0, 'event_key': 0, 'comp_level': 0, 'set_number': 0, 'match_number': 0}
-
-        teams_sides_dict = {
-            f'red{index + 1}': team for index, team in enumerate(red)
-        }
-        teams_sides_dict.update({
-            f'blue{index + 1}': team for index, team in enumerate(blue)
-        })
-
-        pre_match_fields = {
-            'match_key': data['key'],
-            'event_key': data['event_key'],
-            'match_type': data['comp_level'],
-            'set_number': data['set_number'],
-            'match_number': data['match_number'],
-        }
-
-        result = {**teams_sides_dict, **pre_match_fields}
-
-        return result, red, blue
+        return blue + red
 
     def get_event_rankings(self, event='2024ksla'):
         rankings = self.tba.event_rankings(event)

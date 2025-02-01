@@ -10,6 +10,7 @@ from redis import Redis
 from helpers.logging_setup import setup_logging
 from helpers.match_prediction import MatchPrediction
 from helpers.statbotics_api import StatboticsAPI
+from helpers.tba_api import BlueAllianceAPI
 
 # Configuration for Redis connection
 redis_host: str = 'localhost'
@@ -46,7 +47,7 @@ scaler_dir = os.path.join('static', 'model', 'scaler.pkl')
 
 match_predictor = MatchPrediction(model_dir, rf_dir, scaler_dir)
 statbotics = StatboticsAPI(2024)
-
+tba_api = BlueAllianceAPI(api_key='fWFSAeNa3VxZUdVJhaXgAXjnM9mfLBmbw1bbOrviglJBtJxmcUTANIMpECdWSSwU', year=2024)
 
 @app.route('/')
 def index():
@@ -82,7 +83,50 @@ def get_match_prediction(match_key):
         return jsonify(metadata), 200
     else:
         # Return an error message as a JSON response with a 404 status code
-        return jsonify({'error': 'Match not found'}), 404
+        team_data = tba_api.get_general_match_info(match_key)
+        formatted_match = statbotics.format_match(team_data)
+        prediction = match_predictor.predict(formatted_match)
+
+        return jsonify({'red_alliance_win_confidence': str(prediction[0]),
+                        'blue_alliance_win_confidence': str(prediction[1]),
+                        'draw_confidence': str(prediction[2])}), 200
+
+
+@app.route('/prediction/', methods=['GET'])
+def get_upcoming_match_prediction():
+    """
+    Returns a match prediction from six teams.
+    Uses Statbotics API system to get the needed input fields
+    Uses Tensorflow Inference to load model file and make a prediction
+
+    Args:
+        teams (list): list of six teams in form data
+    """
+    # Grabs team keys from form data in puts them into lists.
+    form_labels_red = {'team-red-1',
+                       'team-red-2',
+                       'team-red-3'}
+    form_labels_blue = {'team-blue-1',
+                        'team-blue-2',
+                        'team-blue-3'}
+    teams_red = []
+    teams_blue = []
+    for form_label in form_labels_red:
+        teams_red.append(request.form.get(form_label))
+    for form_label in form_labels_blue:
+        teams_blue.append(request.form.get(form_label))
+
+    formatted_match = statbotics.format_match(teams_blue + teams_red)
+
+    prediction = match_predictor.predict(formatted_match)
+
+    return {'red_alliance_win_confidence': str(prediction[0]),
+            'blue_alliance_win_confidence': str(prediction[1]),
+            'draw_confidence': str(prediction[2])}
+
+
+if __name__ == '__main__':
+    app.run(port=5001)
 
 
 def handle_new_match_score(message_json):
