@@ -92,7 +92,7 @@ def get_match_prediction(match_key):
                         'draw_confidence': str(prediction[2])}), 200
 
 
-@app.route('/prediction', methods=['GET'])
+@app.route('/prediction', methods=['GET', 'POST'])
 def get_upcoming_match_prediction():
     """
     Returns a match prediction from six teams.
