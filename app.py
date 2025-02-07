@@ -238,6 +238,7 @@ def handle_upcoming_match(message_json):
     if offseason:
         metadata = {
             **local_prediction,
+            **rp_prediction,
             'statbotics_prediction': 'red',
             'statbotics_win_confidence': '1.0',
             'local_predicted_winner': local_predicted_winner,
@@ -249,6 +250,7 @@ def handle_upcoming_match(message_json):
     else:
         metadata = {
             **local_prediction,
+            **rp_prediction,
             'statbotics_prediction': statbotics.get_statbotics_match_prediction(message_json['match_key'])[0],
             'statbotics_win_confidence': statbotics.get_statbotics_match_prediction(message_json['match_key'])[1],
             'local_predicted_winner': local_predicted_winner,
