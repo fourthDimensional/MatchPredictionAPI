@@ -44,10 +44,18 @@ setup_logging()
 model_dir = os.path.join('static', 'model', 'model.keras')
 rf_dir = os.path.join('static', 'model', 'random_forest.pkl')
 scaler_dir = os.path.join('static', 'model', 'scaler.pkl')
+model_rp_dir = os.path.join('static', 'rp_model', 'model.keras')
+rf_rp_dir = os.path.join('static', 'rp_model', 'random_forest.pkl')
+scaler_rp_dir = os.path.join('static', 'rp_model', 'scaler.pkl')
 
-match_predictor = MatchPrediction(model_dir, rf_dir, scaler_dir)
+match_predictor = MatchPrediction(model_dir, rf_dir, scaler_dir, model_rp_dir, rf_rp_dir, scaler_rp_dir)
 statbotics = StatboticsAPI(2024)
 tba_api = BlueAllianceAPI(api_key='fWFSAeNa3VxZUdVJhaXgAXjnM9mfLBmbw1bbOrviglJBtJxmcUTANIMpECdWSSwU', year=2024)
+
+
+def formatRpPrediction(value):
+    return round(value*4, 0)
+
 
 @app.route('/')
 def index():
@@ -86,10 +94,13 @@ def get_match_prediction(match_key):
         team_data = tba_api.get_general_match_info(match_key)
         formatted_match = statbotics.format_match(team_data)
         prediction = match_predictor.predict(formatted_match)
+        rp_prediction = match_predictor.predict_rp(formatted_match)
 
         return jsonify({'red_alliance_win_confidence': str(prediction[0]),
                         'blue_alliance_win_confidence': str(prediction[1]),
-                        'draw_confidence': str(prediction[2])}), 200
+                        'draw_confidence': str(prediction[2]),
+                        'red_rp_prediction': formatRpPrediction(rp_prediction[0]),
+                        'blue_rp_prediction': formatRpPrediction(rp_prediction[1])}), 200
 
 
 @app.route('/prediction', methods=['GET', 'POST'])
@@ -119,10 +130,13 @@ def get_upcoming_match_prediction():
     formatted_match = statbotics.format_match(teams_blue + teams_red)
 
     prediction = match_predictor.predict(formatted_match)
+    rp_prediction = match_predictor.predict_rp(formatted_match)
 
     return {'red_alliance_win_confidence': str(prediction[0]),
             'blue_alliance_win_confidence': str(prediction[1]),
-            'draw_confidence': str(prediction[2])}
+            'draw_confidence': str(prediction[2]),
+            'red_rp_prediction': str(formatRpPrediction(rp_prediction[0])),
+            'blue_rp_prediction': str(formatRpPrediction(rp_prediction[1]))}
 
 
 if __name__ == '__main__':
