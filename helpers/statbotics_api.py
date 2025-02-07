@@ -39,7 +39,37 @@ class StatboticsAPI:
         else:
             print(f"Grabbing statistics from online, {team} was not cached")
             metrics = self.sb.get_team_year(int(team), self.year)
-            extracted_metric = {key: metrics[key] for key in fields}
+
+            filtered_metrics = {}
+
+            filtered_metrics['team'] = metrics['team']
+            filtered_metrics['epa_start'] = metrics['epa']['stats']['start']
+            filtered_metrics['epa_pre_champs'] = metrics['epa']['stats']['pre_champs']
+            filtered_metrics['epa_diff'] = metrics['epa']['stats']['pre_champs'] - metrics['epa']['stats']['start']
+            filtered_metrics['auto_epa_end'] = metrics['epa']['breakdown']['auto_points']
+            filtered_metrics['teleop_epa_end'] = metrics['epa']['breakdown']['teleop_points']
+            filtered_metrics['endgame_epa_end'] = metrics['epa']['breakdown']['endgame_points']
+            filtered_metrics['rp_1_epa'] = metrics['epa']['breakdown']['rp_1']
+            filtered_metrics['rp_2_epa'] = metrics['epa']['breakdown']['rp_2']
+            filtered_metrics['unitless_epa_end'] = metrics['epa']['unitless']
+            filtered_metrics['norm_epa_end'] = metrics['epa']['norm']
+            filtered_metrics['epa_conf_1'] = metrics['epa']['conf'][0]
+            filtered_metrics['epa_conf_2'] = metrics['epa']['conf'][1]
+            filtered_metrics['wins'] = metrics['record']['wins']
+            filtered_metrics['losses'] = metrics['record']['losses']
+            filtered_metrics['ties'] = metrics['record']['ties']
+            filtered_metrics['count'] = metrics['record']['count']
+            filtered_metrics['winrate'] = metrics['record']['winrate']
+            filtered_metrics['total_epa_rank'] = metrics['epa']['ranks']['total']['rank']
+            filtered_metrics['total_epa_percentile'] = metrics['epa']['ranks']['total']['percentile']
+            filtered_metrics['country_epa_rank'] = metrics['epa']['ranks']['country']['rank']
+            filtered_metrics['state_epa_rank'] = metrics['epa']['ranks']['state']['rank']
+            filtered_metrics['district_epa_rank'] = metrics['epa']['ranks']['district']['rank']
+            filtered_metrics['country_epa_percentile'] = metrics['epa']['ranks']['country']['percentile']
+            filtered_metrics['state_epa_percentile'] = metrics['epa']['ranks']['state']['percentile']
+            filtered_metrics['district_epa_percentile'] = metrics['epa']['ranks']['district']['percentile']
+
+            extracted_metric = filtered_metrics
 
             newly_formatted = {}
             extracted_team = extracted_metric['team']
@@ -82,9 +112,8 @@ class StatboticsAPI:
         blue2 = self.format_team(match[1][3:], 'blue2')
         blue3 = self.format_team(match[2][3:], 'blue3')
 
-        team_metrics = {'red1': int(match[0][3:])} | red1 | {'red2': int(match[1][3:])} | red2 | {
-            'red3': int(match[2][3:])} | red3 | {'blue1': int(match[3][3:])} | blue1 | {
-                           'blue2': int(match[4][3:])} | blue2 | {'blue3': int(match[5][3:])} | blue3
+        team_metrics = {'red1': int(match[0][3:])} | {'red2': int(match[1][3:])} | {'red3': int(match[2][3:])} | {'blue1': int(match[3][3:])} | {'blue2': int(match[4][3:])} | {'blue3': int(match[5][3:])}
+        team_metrics = team_metrics | red1 | red2 | red3 | blue1 | blue2 | blue3
 
         return team_metrics
 
