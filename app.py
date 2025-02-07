@@ -213,12 +213,15 @@ def handle_upcoming_match(message_json):
 
     # Predict the match outcome using the match predictor
     prediction = match_predictor.predict(formatted_match)
+    rp_prediction = match_predictor.predict_rp(formatted_match)
 
     # Create a dictionary for local prediction results
     local_prediction = {
         'red_alliance_win_confidence': str(prediction[0]),
         'blue_alliance_win_confidence': str(prediction[1]),
-        'draw_confidence': str(prediction[2])
+        'draw_confidence': str(prediction[2]),
+        'red_rp_prediction': str(formatRpPrediction(rp_prediction[0])),
+        'blue_rp_prediction': str(formatRpPrediction(rp_prediction[1]))
     }
 
     # Determine the predicted winner based on confidence values
