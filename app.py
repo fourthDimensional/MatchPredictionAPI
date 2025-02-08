@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+import smtplib
 
 from flask import Flask, jsonify, request, render_template, send_file, redirect
 from flask_caching import Cache
@@ -11,6 +12,18 @@ from helpers.logging_setup import setup_logging
 from helpers.match_prediction import MatchPrediction
 from helpers.statbotics_api import StatboticsAPI
 from helpers.tba_api import BlueAllianceAPI
+from email.mime.text import MIMEText
+
+server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+
+def send_email(subject, body):
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = os.getenv('EMAIL_ADDRESS')
+    msg['To'] = os.getenv('EMAIL_RECIPIENTS')
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
+       smtp_server.login(os.getenv('EMAIL_ADDRESS'), os.getenv('EMAIL_PASSWORD'))
+       smtp_server.sendmail(os.getenv('EMAIL_ADDRESS'), os.getenv('EMAIL_RECIPIENTS'), msg.as_string())
 
 # Configuration for Redis connection
 redis_host: str = 'localhost'
@@ -203,6 +216,8 @@ def handle_new_match_score(message_json):
             redis_client.set('failed_matches', 0)
         redis_client.incrby('failed_matches', 1)
         redis_client.hset(f'failed_match:{match_key}:fields', mapping={**message_json['match']})
+
+        send_email('Failed Match', f'Match {match_key} has failed to process')
 
     # Return a success response
     return jsonify({'status': 'success'}), 200
