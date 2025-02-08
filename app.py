@@ -215,7 +215,6 @@ def handle_new_match_score(message_json):
         if not redis_client.exists('failed_matches'):
             redis_client.set('failed_matches', 0)
         redis_client.incrby('failed_matches', 1)
-        redis_client.hset(f'failed_match:{match_key}:fields', mapping={**message_json['match']})
 
         send_email('Failed Match', f'Match {match_key} has failed to process')
 
