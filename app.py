@@ -18,9 +18,6 @@ server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 
 def send_email(subject, body):
     msg = MIMEText(body)
-    msg['Subject'] = subject
-    msg['From'] = os.getenv('EMAIL_ADDRESS')
-    msg['To'] = os.getenv('EMAIL_RECIPIENTS')
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
        smtp_server.login(os.getenv('EMAIL_ADDRESS'), os.getenv('EMAIL_PASSWORD'))
        smtp_server.sendmail(os.getenv('EMAIL_ADDRESS'), os.getenv('EMAIL_RECIPIENTS'), msg.as_string())
