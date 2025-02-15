@@ -126,11 +126,11 @@
                     <td>{{ match.blue1 }}</td>
                     <td>{{ match.blue2 }}</td>
                     <td>{{ match.blue3 }}</td>
-                    <td>
+                    <td class="{{ match.local_predicted_winner }}">
                         {% if match.local_predicted_winner == 'red' %}
-                            {{ match.red_alliance_win_confidence }}%
+                            {{ match.red_alliance_win_confidence|round(3) }}%
                         {% elif match.local_predicted_winner == 'blue' %}
-                            {{ match.blue_alliance_win_confidence }}%
+                            {{ match.blue_alliance_win_confidence|round(3) }}%
                         {% else %}
                             Draw
                         {% endif %}
