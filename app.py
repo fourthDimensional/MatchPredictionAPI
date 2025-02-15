@@ -59,7 +59,7 @@ rf_rp_dir = os.path.join('static', 'rp_model', 'random_forest.pkl')
 scaler_rp_dir = os.path.join('static', 'rp_model', 'scaler.pkl')
 
 match_predictor = MatchPrediction(model_dir, rf_dir, scaler_dir, model_rp_dir, rf_rp_dir, scaler_rp_dir)
-statbotics = StatboticsAPI(2025)
+statbotics = StatboticsAPI(2024)
 tba_api = BlueAllianceAPI(api_key='fWFSAeNa3VxZUdVJhaXgAXjnM9mfLBmbw1bbOrviglJBtJxmcUTANIMpECdWSSwU', year=2024)
 
 
