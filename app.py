@@ -213,7 +213,8 @@ def handle_new_match_score(message_json):
             redis_client.set('failed_matches', 0)
         redis_client.incrby('failed_matches', 1)
 
-        send_email('Failed Match', f'Match {match_key} has failed to process')
+        # SHUT UP
+        # send_email('Failed Match', f'Match {match_key} has failed to process')
 
     # Return a success response
     return jsonify({'status': 'success'}), 200
