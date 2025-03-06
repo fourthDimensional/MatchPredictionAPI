@@ -30,7 +30,7 @@ jobs:
 
       # 3. Restore Docker Layer Cache
       - name: Restore Docker cache
-        uses: actions/cache@v4.1.1
+        uses: actions/cache@v4.2.2
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ github.sha }}
