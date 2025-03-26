@@ -27,7 +27,7 @@ redis_host: str = 'localhost'
 redis_port: int = 6379
 redis_db: int = 0
 
-offseason = True
+offseason = False
 
 # Create a Redis connection using environment variables
 redis_client = Redis(
