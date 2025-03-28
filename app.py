@@ -175,13 +175,22 @@ def handle_new_match_score(message_json):
         # Log the red alliance total point keys
         logging.info(f'red total point keys {message_json["match"]["alliances"]["red"].keys()}')
 
-        # Store the match scores and ranking points in Redis
-        redis_client.hset(f'upcoming_match:{match_key}:metadata', mapping={
-            'red_score': message_json['match']['alliances']['red']['score'],
-            'blue_score': message_json['match']['alliances']['blue']['score'],
-            'red_rp': message_json['match']['score_breakdown']['red']['rp'],
-            'blue_rp': message_json['match']['score_breakdown']['blue']['rp']
-        })
+        if message_json['match']['score_breakdown'] is not None:
+            # Store the match scores and ranking points in Redis
+            redis_client.hset(f'upcoming_match:{match_key}:metadata', mapping={
+                'red_score': message_json['match']['alliances']['red']['score'],
+                'blue_score': message_json['match']['alliances']['blue']['score'],
+                'red_rp': message_json['match']['score_breakdown']['red']['rp'],
+                'blue_rp': message_json['match']['score_breakdown']['blue']['rp']
+            })
+        else:
+            # Store the match scores and ranking points in Redis
+            redis_client.hset(f'upcoming_match:{match_key}:metadata', mapping={
+                'red_score': message_json['match']['alliances']['red']['score'],
+                'blue_score': message_json['match']['alliances']['blue']['score'],
+                'red_rp': 0,
+                'blue_rp': 0
+            })
 
         # Rename the keys to mark the match as completed
         redis_client.rename(f'upcoming_match:{match_key}:fields',
