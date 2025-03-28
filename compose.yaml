@@ -22,7 +22,7 @@ services:
   redis:
     image: redis/redis-stack:latest
     environment:
-      - REDIS_ARGS --appendonly yes --save 30 1
+      - REDIS_ARGS --appendonly yes --save 30 1 --protected-mode no
     ports:
       - 6379:6379
       - 8001:8001
