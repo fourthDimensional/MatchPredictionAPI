@@ -315,6 +315,44 @@ def get_dataset():
     return render_template('dataset.html', matches=matches)
 
 
+@app.route('/dataset/<event>', methods=['GET'])
+def get_dataset(event):
+    # Get all keys for completed and upcoming matches
+    completed_keys = redis_client.keys('completed_match:*:fields')
+    upcoming_keys = redis_client.keys('upcoming_match:*:fields')
+
+    # Initialize a list to hold the match data
+    matches = []
+
+    # Function to process match keys
+    def process_keys(keys, status):
+        for key in keys:
+            # Get the hash data for the key
+            data = redis_client.hgetall(key)
+
+            # Get the associated metadata key
+            metadata_key = key.replace(':fields', ':metadata')
+            metadata = redis_client.hgetall(metadata_key)
+
+            # Merge the data and metadata
+            merged_data = {**data, **metadata}
+            merged_data['match_key'] = key.split(':')[1]  # Extract match_key from the key
+            merged_data['status'] = status  # Add status to differentiate between completed and upcoming
+
+            # Filter by event_key
+            if merged_data.get('event_key') == event:
+                matches.append(merged_data)
+
+    # Process completed and upcoming matches
+    process_keys(completed_keys, 'completed')
+    process_keys(upcoming_keys, 'upcoming')
+
+    # Sort matches: upcoming matches first, then by match_key
+    matches.sort(key=lambda x: (x['status'] == 'completed', x['match_key']))
+
+    return render_template('dataset.html', matches=matches)
+
+
 @app.route('/dataset_csv', methods=['GET'])
 def get_dataset_csv():
     # Get all keys that match the pattern
