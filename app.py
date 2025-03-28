@@ -75,6 +75,7 @@ def index():
 # Define a route to handle POST requests from TBA
 @app.route('/tba', methods=['POST'])
 def tba_webhook():
+    logging.info(request.json)
     # Match the message type from the request JSON
     match request.json['message_type']:
         case 'ping':
