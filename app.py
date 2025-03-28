@@ -348,8 +348,12 @@ def get_filtered_dataset(event):
     process_keys(completed_keys, 'completed')
     process_keys(upcoming_keys, 'upcoming')
 
+    # create a new column called match_number
+    for match in matches:
+        match['match_number'] = int(match['match_key'].split('_')[1][1:])
+
     # Sort matches: upcoming matches first, then by match_key
-    matches.sort(key=lambda x: (x['status'] == 'completed', x['match_key']))
+    matches.sort(key=lambda x: (x['status'] == 'completed', x['match_number']))
 
     return render_template('dataset.html', matches=matches)
 
