@@ -60,7 +60,7 @@ class MatchPrediction:
         # Select features based on feature importance
         feature_importance_dict = dict(zip(X.columns, self.rf_rp.feature_importances_))
         sorted_features = sorted(feature_importance_dict.items(), key=lambda item: item[1], reverse=True)
-        features_to_use = [feat[0] for feat in sorted_features[:-89]]
+        features_to_use = [feat[0] for feat in sorted_features[:-130]]
 
         X_reduced = X_normalized_df[features_to_use]
 
