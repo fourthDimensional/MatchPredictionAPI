@@ -126,4 +126,4 @@ class StatboticsAPI:
             list: A list containing the predicted winner and win probability.
         """
         match_info = self.sb.get_match(match_key)
-        return [match_info['epa_winner'], match_info['epa_win_prob']]
+        return [match_info['pred']['winner'], 1]
