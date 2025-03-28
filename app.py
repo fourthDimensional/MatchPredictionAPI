@@ -13,6 +13,7 @@ from helpers.match_prediction import MatchPrediction
 from helpers.statbotics_api import StatboticsAPI
 from helpers.tba_api import BlueAllianceAPI
 from email.mime.text import MIMEText
+import sentry_sdk
 
 server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 
@@ -34,6 +35,13 @@ redis_client = Redis(
     host=os.getenv('REDIS_HOST', redis_host),
     port=int(os.getenv('REDIS_PORT', str(redis_port))),
     decode_responses=True
+)
+
+sentry_sdk.init(
+    dsn="https://d4b0c3758aa4275d1ec7719be00327b8@o4509057491337216.ingest.us.sentry.io/4509057492647936",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
 )
 
 app = Flask(__name__, template_folder='static/templates')

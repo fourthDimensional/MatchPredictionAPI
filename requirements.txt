@@ -11,3 +11,4 @@ Flask-Caching==2.3.0
 groq==0.11.0
 redis~=5.0.7
 tbapy~=1.3.2
+sentry-sdk[flask]~=2.24.1
