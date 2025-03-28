@@ -350,7 +350,7 @@ def get_filtered_dataset(event):
 
     # create a new column called match_number
     for match in matches:
-        match['match_number'] = int(match['match_key'].split('_')[1][1:])
+        match['match_number'] = int(match['match_key'].split('_')[1][2:])
 
     # Sort matches: upcoming matches first, then by match_key
     matches.sort(key=lambda x: (x['status'] == 'completed', x['match_number']))
