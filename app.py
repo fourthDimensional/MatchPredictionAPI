@@ -315,7 +315,7 @@ def get_dataset():
     return render_template('dataset.html', matches=matches)
 
 
-@app.route('/dataset/<event>', methods=['GET'])
+@app.route('/dataset/filtered/<event>', methods=['GET'])
 def get_filtered_dataset(event):
     # Get all keys for completed and upcoming matches
     completed_keys = redis_client.keys('completed_match:*:fields')
