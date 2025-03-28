@@ -120,12 +120,12 @@
             {% for match in matches %}
                 <tr class="data-row">
                     <td>{{ match.match_key }}</td>
-                    <td>{{ match.red1 }}</td>
-                    <td>{{ match.red2 }}</td>
-                    <td>{{ match.red3 }}</td>
                     <td>{{ match.blue1 }}</td>
                     <td>{{ match.blue2 }}</td>
                     <td>{{ match.blue3 }}</td>
+                    <td>{{ match.red1 }}</td>
+                    <td>{{ match.red2 }}</td>
+                    <td>{{ match.red3 }}</td>
                     <td class="{{ match.local_predicted_winner }}">
                         {% if match.local_predicted_winner == 'red' %}
                             {{ match.red_alliance_win_confidence }}%
