@@ -51,7 +51,7 @@ CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
 config = {
     "DEBUG": True,
     "CACHE_TYPE": "SimpleCache",
-    "CACHE_DEFAULT_TIMEOUT": 300
+    "CACHE_DEFAULT_TIMEOUT": 400
 }
 
 app.config.from_mapping(config)
@@ -174,14 +174,14 @@ def handle_new_match_score(message_json):
 
         # Log the red alliance total point keys
         logging.info(f'red total point keys {message_json["match"]["alliances"]["red"].keys()}')
-        
+
         try:
             red_rp = message_json['match']['score_breakdown']['red']['rp']
             blue_rp = message_json['match']['score_breakdown']['blue']['rp']
         except (TypeError, KeyError):
             red_rp = 0
             blue_rp = 0
-            
+
         # Store the match scores and ranking points in Redis
         redis_client.hset(f'upcoming_match:{match_key}:metadata', mapping={
             'red_score': message_json['match']['alliances']['red']['score'],
