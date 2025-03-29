@@ -71,7 +71,7 @@ statbotics = StatboticsAPI(2025)
 tba_api = BlueAllianceAPI(api_key='fWFSAeNa3VxZUdVJhaXgAXjnM9mfLBmbw1bbOrviglJBtJxmcUTANIMpECdWSSwU', year=2024)
 
 
-def formatRpPrediction(value):
+def format_rp_prediction(value):
     return round(value*6, 0)
 
 
@@ -118,8 +118,8 @@ def get_match_prediction(match_key):
         return jsonify({'red_alliance_win_confidence': str(prediction[0]),
                         'blue_alliance_win_confidence': str(prediction[1]),
                         'draw_confidence': str(prediction[2]),
-                        'red_rp_prediction': formatRpPrediction(rp_prediction[0]),
-                        'blue_rp_prediction': formatRpPrediction(rp_prediction[1])}), 200
+                        'red_rp_prediction': format_rp_prediction(rp_prediction[0]),
+                        'blue_rp_prediction': format_rp_prediction(rp_prediction[1])}), 200
 
 
 @app.route('/prediction', methods=['GET', 'POST'])
@@ -154,8 +154,8 @@ def get_upcoming_match_prediction():
     return {'red_alliance_win_confidence': str(prediction[0]),
             'blue_alliance_win_confidence': str(prediction[1]),
             'draw_confidence': str(prediction[2]),
-            'red_rp_prediction': str(formatRpPrediction(rp_prediction[0])),
-            'blue_rp_prediction': str(formatRpPrediction(rp_prediction[1]))}
+            'red_rp_prediction': str(format_rp_prediction(rp_prediction[0])),
+            'blue_rp_prediction': str(format_rp_prediction(rp_prediction[1]))}
 
 
 if __name__ == '__main__':
@@ -249,8 +249,8 @@ def handle_upcoming_match(message_json):
         'red_alliance_win_confidence': str(prediction[0]),
         'blue_alliance_win_confidence': str(prediction[1]),
         'draw_confidence': str(prediction[2]),
-        'red_rp_prediction': str(formatRpPrediction(rp_prediction[0])),
-        'blue_rp_prediction': str(formatRpPrediction(rp_prediction[1]))
+        'red_rp_prediction': str(format_rp_prediction(rp_prediction[0])),
+        'blue_rp_prediction': str(format_rp_prediction(rp_prediction[1]))
     }
 
     # Determine the predicted winner based on confidence values
