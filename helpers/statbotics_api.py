@@ -125,5 +125,9 @@ class StatboticsAPI:
         Returns:
             list: A list containing the predicted winner and win probability.
         """
-        match_info = self.sb.get_match(match_key)
-        return [match_info['pred']['winner'], 1]
+        try:
+            match_info = self.sb.get_match(match_key)
+            return [match_info['pred']['winner'], match_info['pred'].get('prob', 1)]
+        except Exception as e:
+            logging.warning(f"Statbotics API request failed for match {match_key}: {str(e)}")
+            return [None, 0]
