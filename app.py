@@ -17,7 +17,7 @@ import sentry_sdk
 
 server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 
-def send_email(subject, body):
+def send_email(body):
     msg = MIMEText(body)
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
        smtp_server.login(os.getenv('EMAIL_ADDRESS'), os.getenv('EMAIL_PASSWORD'))
