@@ -300,7 +300,6 @@ def handle_upcoming_match(message_json):
                 'time': message_json['scheduled_time']
             }
             logging.info(f"Using local prediction as fallback for match {message_json['match_key']}")
-        }
 
     # Store the metadata in Redis
     redis_client.hset(f'upcoming_match:{message_json["match_key"]}:metadata', mapping={**metadata})
