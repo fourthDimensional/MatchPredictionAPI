@@ -70,6 +70,11 @@ match_predictor = MatchPrediction(model_dir, rf_dir, scaler_dir, model_rp_dir, r
 statbotics = StatboticsAPI(2025)
 tba_api = BlueAllianceAPI(api_key='fWFSAeNa3VxZUdVJhaXgAXjnM9mfLBmbw1bbOrviglJBtJxmcUTANIMpECdWSSwU', year=2024)
 
+fields_key = ':fields'
+meta_key = ':metadata'
+completed_key = 'completed_match:*:fields'
+
+
 
 def format_rp_prediction(value):
     return round(value*6, 0)
@@ -311,7 +316,7 @@ def handle_upcoming_match(message_json):
 @app.route('/dataset', methods=['GET'])
 def get_dataset():
     # Get all keys for completed and upcoming matches
-    completed_keys = redis_client.keys('completed_match:*:fields')
+    completed_keys = redis_client.keys(completed_key)
     upcoming_keys = redis_client.keys('upcoming_match:*:fields')
 
     # Initialize a list to hold the match data
@@ -324,7 +329,7 @@ def get_dataset():
             data = redis_client.hgetall(key)
 
             # Get the associated metadata key
-            metadata_key = key.replace(':fields', ':metadata')
+            metadata_key = key.replace(fields_key, meta_key)
             metadata = redis_client.hgetall(metadata_key)
 
             # Merge the data and metadata
@@ -348,7 +353,7 @@ def get_dataset():
 @app.route('/dataset/filtered/<event>', methods=['GET'])
 def get_filtered_dataset(event):
     # Get all keys for completed and upcoming matches
-    completed_keys = redis_client.keys('completed_match:*:fields')
+    completed_keys = redis_client.keys(completed_key)
     upcoming_keys = redis_client.keys('upcoming_match:*:fields')
 
     # Initialize a list to hold the match data
@@ -361,7 +366,7 @@ def get_filtered_dataset(event):
             data = redis_client.hgetall(key)
 
             # Get the associated metadata key
-            metadata_key = key.replace(':fields', ':metadata')
+            metadata_key = key.replace(fields_key, meta_key)
             metadata = redis_client.hgetall(metadata_key)
 
             # Merge the data and metadata
@@ -390,7 +395,7 @@ def get_filtered_dataset(event):
 @app.route('/dataset_csv', methods=['GET'])
 def get_dataset_csv():
     # Get all keys that match the pattern
-    keys = redis_client.keys('completed_match:*:fields')
+    keys = redis_client.keys(completed_key)
 
     # Initialize a set to hold all possible fieldnames
     all_fieldnames = set()
@@ -404,7 +409,7 @@ def get_dataset_csv():
         data = redis_client.hgetall(key)
 
         # Get the associated metadata key
-        metadata_key = key.replace(':fields', ':metadata')
+        metadata_key = key.replace(fields_key, meta_key)
         metadata = redis_client.hgetall(metadata_key)
 
         # Merge the data and metadata
