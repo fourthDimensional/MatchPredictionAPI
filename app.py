@@ -276,7 +276,6 @@ def handle_upcoming_match(message_json):
             'time': message_json['scheduled_time']
         }
     else:
-        metadata = {
         statbotics_prediction = statbotics.get_statbotics_match_prediction(message_json['match_key'])
         if statbotics_prediction[0] is not None:
             metadata = {
