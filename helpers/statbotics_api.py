@@ -1,4 +1,37 @@
+import time
+import random
+import logging
 from statbotics import Statbotics
+
+# Define default metrics to use when API calls fail
+DEFAULT_METRICS = {
+    'team': 0,
+    'epa_start': 0,
+    'epa_pre_champs': 0,
+    'epa_diff': 0,
+    'auto_epa_end': 0,
+    'teleop_epa_end': 0,
+    'endgame_epa_end': 0,
+    'rp_1_epa': 0,
+    'rp_2_epa': 0,
+    'unitless_epa_end': 0,
+    'norm_epa_end': 0,
+    'epa_conf_1': 0,
+    'epa_conf_2': 0,
+    'wins': 0,
+    'losses': 0,
+    'ties': 0,
+    'count': 0,
+    'winrate': 0.5,
+    'total_epa_rank': 0,
+    'total_epa_percentile': 0,
+    'country_epa_rank': 0,
+    'state_epa_rank': 0,
+    'district_epa_rank': 0,
+    'country_epa_percentile': 0,
+    'state_epa_percentile': 0,
+    'district_epa_percentile': 0
+}
 
 fields = [
     'team', 'epa_start', 'epa_pre_champs', 'epa_end', 'epa_diff',
@@ -23,6 +56,8 @@ class StatboticsAPI:
         self.year = year
         self.context = 'seasonal'
         self.cached_teams = {}
+        self.max_retries = 3
+        self.retry_delay = 1  # Initial retry delay in seconds
 
     def get_team_metrics(self, team):
         """
@@ -34,11 +69,27 @@ class StatboticsAPI:
         Returns:
             dict: A dictionary containing the team's metrics.
         """
+        team_number = int(team)
+        
+        # Check if the team metrics are already cached
+        if team_number in self.cached_teams:
+            logging.info(f"Using cached data for team {team_number}")
+            return self.cached_teams[team_number]
 
-        print(f"Grabbing statistics from online, {team} was not cached")
-        metrics = self.sb.get_team_year(int(team), self.year)
+        print(f"Grabbing statistics from online, {team_number} was not cached")
+        
+        retries = 0
+        delay = self.retry_delay
+        
+        while retries <= self.max_retries:
+            try:
+                metrics = self.sb.get_team_year(team_number, self.year)
 
-        filtered_metrics = {}
+                filtered_metrics = {}
+
+                filtered_metrics['team'] = metrics['team']
+                filtered_metrics['epa_start'] = metrics['epa']['stats']['start']
+                filtered_metrics['epa_pre_champs'] = metrics['epa']['stats']['pre_champs']
 
         filtered_metrics['team'] = metrics['team']
         filtered_metrics['epa_start'] = metrics['epa']['stats']['start']
