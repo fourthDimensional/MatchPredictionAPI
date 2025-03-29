@@ -65,25 +65,25 @@ class MatchPrediction:
             dataframe = raw
 
         # Normalize the data
-        X = dataframe.fillna(0)
+        x = dataframe.fillna(0)
 
-        X = X.reindex(columns=new_column_order)
+        x = x.reindex(columns=new_column_order)
 
-        X_normalized = self.sc.transform(X)
-        X_normalized_df = pd.DataFrame(X_normalized, columns=X.columns)
+        x_normalized = self.sc.transform(x)
+        x_normalized_df = pd.DataFrame(x_normalized, columns=x.columns)
 
         # Select features based on feature importance
-        feature_importance_dict = dict(zip(X.columns, self.rf.feature_importances_))
+        feature_importance_dict = dict(zip(x.columns, self.rf.feature_importances_))
         sorted_features = sorted(feature_importance_dict.items(), key=lambda item: item[1], reverse=True)
         features_to_use = [feat[0] for feat in sorted_features[:-130]]
 
-        X_reduced = X_normalized_df[features_to_use]
+        x_reduced = x_normalized_df[features_to_use]
 
-        print(X_reduced.columns.to_list())
+        print(x_reduced.columns.to_list())
 
-        X_reduced.to_csv('X_reduced.csv')
+        x_reduced.to_csv('x_reduced.csv')
 
-        return X_reduced
+        return x_reduced
 
     def preprocess_data_rp(self, raw, convert=True):
         if convert:
@@ -92,20 +92,20 @@ class MatchPrediction:
             dataframe = raw
 
         # Normalize the data
-        X = dataframe.fillna(0)
-        X_normalized = self.sc_rp.transform(X)
-        X_normalized_df = pd.DataFrame(X_normalized, columns=X.columns)
+        x = dataframe.fillna(0)
+        x_normalized = self.sc_rp.transform(x)
+        x_normalized_df = pd.DataFrame(x_normalized, columns=x.columns)
 
         # Select features based on feature importance
-        feature_importance_dict = dict(zip(X.columns, self.rf_rp.feature_importances_))
+        feature_importance_dict = dict(zip(x.columns, self.rf_rp.feature_importances_))
         sorted_features = sorted(feature_importance_dict.items(), key=lambda item: item[1], reverse=True)
         features_to_use = [feat[0] for feat in sorted_features[:-89]]
 
-        X_reduced = X_normalized_df[features_to_use]
+        x_reduced = x_normalized_df[features_to_use]
 
-        X_reduced.to_csv('X_reduced_rp.csv')
+        x_reduced.to_csv('x_reduced_rp.csv')
 
-        return X_reduced
+        return x_reduced
 
     def predict(self, preprocessed, focus=2):
         if focus == 2:

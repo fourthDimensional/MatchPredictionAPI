@@ -46,7 +46,7 @@ sentry_sdk.init(
 
 app = Flask(__name__, template_folder='static/templates')
 
-CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
+CORS(app, resources={r'/*': {'origins': '*', "send_wildcard": "False"}}, supports_credentials=True)
 
 config = {
     "DEBUG": True,
