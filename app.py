@@ -277,14 +277,30 @@ def handle_upcoming_match(message_json):
         }
     else:
         metadata = {
-            **local_prediction,
-            'statbotics_prediction': statbotics.get_statbotics_match_prediction(message_json['match_key'])[0],
-            'statbotics_win_confidence': statbotics.get_statbotics_match_prediction(message_json['match_key'])[1],
-            'local_predicted_winner': local_predicted_winner,
-            'event_key': message_json['event_key'],
-            'match_key': message_json['match_key'],
-            'event_name': message_json['event_name'],
-            'time': message_json['scheduled_time']
+        statbotics_prediction = statbotics.get_statbotics_match_prediction(message_json['match_key'])
+        if statbotics_prediction[0] is not None:
+            metadata = {
+                **local_prediction,
+                'statbotics_prediction': statbotics_prediction[0],
+                'statbotics_win_confidence': statbotics_prediction[1],
+                'local_predicted_winner': local_predicted_winner,
+                'event_key': message_json['event_key'],
+                'match_key': message_json['match_key'],
+                'event_name': message_json['event_name'],
+                'time': message_json['scheduled_time']
+            }
+        else:
+            metadata = {
+                **local_prediction,
+                'statbotics_prediction': local_predicted_winner,
+                'statbotics_win_confidence': '0',
+                'local_predicted_winner': local_predicted_winner,
+                'event_key': message_json['event_key'],
+                'match_key': message_json['match_key'],
+                'event_name': message_json['event_name'],
+                'time': message_json['scheduled_time']
+            }
+            logging.info(f"Using local prediction as fallback for match {message_json['match_key']}")
         }
 
     # Store the metadata in Redis
