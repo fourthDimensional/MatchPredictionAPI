@@ -37,14 +37,12 @@ redis_client = Redis(
     decode_responses=True
 )
 
-print(redis_host, redis_port, redis_db)
-
-# sentry_sdk.init(
-#     dsn="https://d4b0c3758aa4275d1ec7719be00327b8@o4509057491337216.ingest.us.sentry.io/4509057492647936",
-#     # Add data like request headers and IP for users,
-#     # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-#     send_default_pii=True,
-# )
+sentry_sdk.init(
+    dsn="https://d4b0c3758aa4275d1ec7719be00327b8@o4509057491337216.ingest.us.sentry.io/4509057492647936",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+)
 
 app = Flask(__name__, template_folder='static/templates')
 
