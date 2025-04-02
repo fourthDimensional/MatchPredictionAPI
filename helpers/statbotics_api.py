@@ -7,6 +7,11 @@ class StatboticsAPI:
     CACHE_EXPIRATION = 300  # 5 minutes in seconds
 
     def __init__(self, year):
+        """
+        Initialize the Statbotics API.
+
+        :param year:
+        """
         self.sb = Statbotics()
         self.year = year
         self.cached_teams = {}  # Store data along with timestamps
@@ -14,13 +19,27 @@ class StatboticsAPI:
         self.retry_delay = 1  # Initial retry delay in seconds
 
     def _is_cache_valid(self, team_number):
-        """Check if cached data is still valid."""
+        """Check if cached data is still valid.
+
+        Args:
+            team_number (int): The team number.
+
+        Returns:
+            bool: True if the cached data is still valid, False otherwise.
+        """
+
         return (
             team_number in self.cached_teams and
             (time.time() - self.cached_teams[team_number]['timestamp']) < self.CACHE_EXPIRATION
         )
 
     def get_team_metrics(self, team):
+        """
+        Retrieve team metrics from the Statbotics API.
+
+        :param team:
+        :return:
+        """
         team_number = int(team)
 
         # Remove expired cache
