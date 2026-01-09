@@ -55,7 +55,9 @@ class StatboticsAPI:
         delay = self.retry_delay
         while retries <= self.max_retries:
             try:
-                metrics = self.sb.get_team_year(team_number, self.year)
+                print(team_number)
+                stb = Statbotics()
+                metrics = stb.get_team_year(int(team_number), 2025, ['all'])
                 filtered_metrics = {
                     'team': metrics['team'],
                     'epa_start': metrics['epa']['stats']['start'],
