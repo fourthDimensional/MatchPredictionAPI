@@ -4,8 +4,6 @@ import pickle
 import pandas as pd
 from keras.models import load_model
 
-os.environ["KERAS_BACKEND"] = "TORCH"
-
 new_column_order = [
     'blue1', 'blue1_auto_epa_end', 'blue1_count', 'blue1_country_epa_percentile', 'blue1_country_epa_rank',
     'blue1_district_epa_percentile', 'blue1_district_epa_rank', 'blue1_endgame_epa_end', 'blue1_epa_conf_1',

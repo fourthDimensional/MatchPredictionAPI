@@ -13,7 +13,6 @@ from helpers.match_prediction import MatchPrediction
 from helpers.statbotics_api import StatboticsAPI
 from helpers.tba_api import BlueAllianceAPI
 from email.mime.text import MIMEText
-import sentry_sdk
 
 server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 
@@ -37,13 +36,6 @@ redis_client = Redis(
     decode_responses=True
 )
 
-sentry_sdk.init(
-    dsn="https://d4b0c3758aa4275d1ec7719be00327b8@o4509057491337216.ingest.us.sentry.io/4509057492647936",
-    # Add data like request headers and IP for users,
-    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-    send_default_pii=True,
-)
-
 app = Flask(__name__, template_folder='static/templates')
 
 CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
@@ -53,7 +45,6 @@ config = {
     "CACHE_TYPE": "SimpleCache",
     "CACHE_DEFAULT_TIMEOUT": 400
 }
-
 app.config.from_mapping(config)
 cache = Cache(app)
 
@@ -73,7 +64,6 @@ tba_api = BlueAllianceAPI(api_key='fWFSAeNa3VxZUdVJhaXgAXjnM9mfLBmbw1bbOrviglJBt
 fields_key = ':fields'
 meta_key = ':metadata'
 completed_key = 'completed_match:*:fields'
-
 
 
 def format_rp_prediction(value):
@@ -151,16 +141,15 @@ def get_upcoming_match_prediction():
     for form_label in form_labels_blue:
         teams_blue.append(request.form.get(form_label))
 
+
     formatted_match = statbotics.format_match(teams_blue + teams_red)
 
     prediction = match_predictor.predict(formatted_match)
-    rp_prediction = match_predictor.predict_rp(formatted_match)
+    # rp_prediction = match_predictor.predict_rp(formatted_match)
 
     return {'red_alliance_win_confidence': str(prediction[0]),
             'blue_alliance_win_confidence': str(prediction[1]),
-            'draw_confidence': str(prediction[2]),
-            'red_rp_prediction': str(format_rp_prediction(rp_prediction[0])),
-            'blue_rp_prediction': str(format_rp_prediction(rp_prediction[1]))}
+            'draw_confidence': str(prediction[2])}
 
 
 if __name__ == '__main__':
